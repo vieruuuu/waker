@@ -1,11 +1,22 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import { SetPassword } from "../islands/set-password";
+import { Main } from "../islands/main";
+import { db, State } from "astro:db";
+
+const passwordCookie = Astro.cookies.get("password")?.value;
+
+const [_state_] = await db.select().from(State).limit(1);
+const state = !!_state_?.state;
 ---
 
 <Layout>
-	<Welcome />
+  {
+    passwordCookie ? (
+      <Main state={state} client:load />
+    ) : (
+      <SetPassword client:load />
+    )
+  }
 </Layout>
